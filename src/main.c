@@ -14,7 +14,7 @@
 
 PBL_APP_INFO(MY_UUID,
 			"Antonio Weather", "Antonio Asaro", // Modification of "Futura Weather" by Niknam Moslehi which is a modification of "Roboto Weather" by Martin Rosinski
-             1, 12, /* App version */
+             1, 121, /* App version */
              RESOURCE_ID_IMAGE_MENU_ICON,
              APP_INFO_WATCH_FACE);
 
