@@ -1,11 +1,14 @@
 #include "pebble_os.h"
+
 #include "http.h"
+#include "httpcapture.h"
 
 #define HTTP_URL_KEY 0xFFFF
 #define HTTP_STATUS_KEY 0xFFFE
 #define HTTP_COOKIE_KEY 0xFFFC
 #define HTTP_CONNECT_KEY 0xFFFB
 #define HTTP_USE_GET_KEY 0xFFFA
+#define HTTP_FRAMEBUFFER_SLICE 0xFFF9
 	
 #define HTTP_APP_ID_KEY 0xFFF2
 #define HTTP_COOKIE_STORE_KEY 0xFFF0
@@ -32,7 +35,7 @@ static void app_send_failed(DictionaryIterator* failed, AppMessageResult reason,
 static void app_received(DictionaryIterator* received, void* context);
 static void app_dropped(void* context, AppMessageResult reason);
 
-HTTPResult http_out_get(const char* url, int32_t cookie, DictionaryIterator **iter_out) {
+HTTPResult http_out_get(const char* url, bool use_post, int32_t cookie, DictionaryIterator **iter_out) {
 	AppMessageResult app_result = app_message_out_get(iter_out);
 	if(app_result != APP_MSG_OK) {
 		return app_result;
@@ -49,6 +52,12 @@ HTTPResult http_out_get(const char* url, int32_t cookie, DictionaryIterator **it
 	if(dict_result != DICT_OK) {
 		return dict_result << 12;
 	}
+	if(!use_post) {
+		dict_result = dict_write_int8(*iter_out, HTTP_USE_GET_KEY, 1);
+		if(dict_result != DICT_OK) {
+			return dict_result << 12;
+		}
+	}
 	return HTTP_OK;
 }
 
@@ -59,6 +68,8 @@ HTTPResult http_out_send() {
 	return result;
 }
 
+void http_capture_out_sent(DictionaryIterator *sent, void *context);
+
 bool http_register_callbacks(HTTPCallbacks callbacks, void* context) {
 	http_callbacks = callbacks;
 	if(callbacks_registered) {
@@ -68,6 +79,7 @@ bool http_register_callbacks(HTTPCallbacks callbacks, void* context) {
 	if(!callbacks_registered) {
 		app_callbacks = (AppMessageCallbacksNode){
 			.callbacks = {
+				.out_sent = http_capture_out_sent,
 				.out_failed = app_send_failed,
 				.in_received = app_received,
 				.in_dropped = app_dropped,
@@ -201,18 +213,28 @@ static void app_received(DictionaryIterator* received, void* context) {
 		}
 		return;
 	}
+	
+	// Capture screen
+	tuple = dict_find(received, HTTP_FRAMEBUFFER_SLICE);
+	if(tuple) {
+		http_capture_send(0);
+		return;
+	}
+	
 	// Time response (special: no app id)
 	tuple = dict_find(received, HTTP_TIME_KEY);
 	if(tuple) {
 		app_received_time(tuple->value->uint32, received, context);
 		return;
 	}
+	
 	// Location response (special: no app id)
 	tuple = dict_find(received, HTTP_LOCATION_KEY);
 	if(tuple) {
 		app_received_location(tuple->value->uint32, received, context);
 		return;
 	}
+		
 	// Check for the app id
 	tuple = dict_find(received, HTTP_APP_ID_KEY);
 	if(!tuple) {

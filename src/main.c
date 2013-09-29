@@ -97,7 +97,40 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 	if(cookie != WEATHER_HTTP_COOKIE) return;
 	Tuple* icon_tuple = dict_find(received, WEATHER_KEY_ICON);
 	if(icon_tuple) {
-		int icon = icon_tuple->value->int8;
+		int icon = -1;
+		char ipng[16];
+		strcpy(ipng, icon_tuple->value->cstring);
+		
+		// map openweather to futura-weather icons
+		// 01d.png	 01n.png	 sky is clear
+		// 02d.png	 02n.png	 few clouds
+		// 03d.png	 03n.png	 scattered clouds
+		// 04d.png	 04n.png	 broken clouds
+		// 09d.png	 09n.png	 shower rain
+		// 10d.png	 10n.png	 Rain
+		// 11d.png	 11n.png	 Thunderstorm
+		// 13d.png	 13n.png	 snow
+		// 50d.png	 50n.png	 mist
+	    if (strcmp(ipng, "01d") == 0) icon = WEATHER_ICON_CLEAR_DAY;
+	    if (strcmp(ipng, "01n") == 0) icon = WEATHER_ICON_CLEAR_NIGHT;
+	    if (strcmp(ipng, "02d") == 0) icon = WEATHER_ICON_PARTLY_CLOUDY_DAY;
+	    if (strcmp(ipng, "02n") == 0) icon = WEATHER_ICON_PARTLY_CLOUDY_NIGHT;
+	    if (strcmp(ipng, "03d") == 0) icon = WEATHER_ICON_CLOUDY;
+	    if (strcmp(ipng, "03n") == 0) icon = WEATHER_ICON_CLOUDY;
+	    if (strcmp(ipng, "04d") == 0) icon = WEATHER_ICON_CLOUDY;
+	    if (strcmp(ipng, "04n") == 0) icon = WEATHER_ICON_CLOUDY;
+	    if (strcmp(ipng, "09d") == 0) icon = WEATHER_ICON_RAIN;
+	    if (strcmp(ipng, "09n") == 0) icon = WEATHER_ICON_RAIN;
+	    if (strcmp(ipng, "10d") == 0) icon = WEATHER_ICON_RAIN;
+	    if (strcmp(ipng, "10n") == 0) icon = WEATHER_ICON_RAIN;
+	    if (strcmp(ipng, "11d") == 0) icon = WEATHER_ICON_RAIN;
+	    if (strcmp(ipng, "11n") == 0) icon = WEATHER_ICON_RAIN;
+	    if (strcmp(ipng, "13d") == 0) icon = WEATHER_ICON_SNOW;
+	    if (strcmp(ipng, "13n") == 0) icon = WEATHER_ICON_SNOW;
+	    if (strcmp(ipng, "50d") == 0) icon = WEATHER_ICON_FOG;
+	    if (strcmp(ipng, "50n") == 0) icon = WEATHER_ICON_FOG;	
+		
+		
 		if(icon >= 0 && icon < 10) {
 			weather_layer_set_icon(&weather_layer, icon);
 		} else {
@@ -305,25 +338,26 @@ void pbl_main(void *params)
 }
 
 void request_weather() {
+    DictionaryIterator *body;
+    static char url[256];
+    static char lon[64];
+    static char lat[64];
+    static char unt[64];
+
 	if(!located) {
 		http_location_request();
 		return;
 	}
-	// Build the HTTP request
-	DictionaryIterator *body;
-	HTTPResult result = http_out_get("https://ofkorth.net/pebble/weather.php", WEATHER_HTTP_COOKIE, &body);
-	if(result != HTTP_OK) {
-#ifndef ANTONIO		
-		weather_layer_set_icon(&weather_layer, WEATHER_ICON_NO_WEATHER);
-#endif
+
+	strcpy(url, "http://antonioasaro.site50.net/weather.php");
+	strcpy(lat, "?lat="); strcat(lat, itoa(our_latitude)); 
+	strcpy(lon, "&lon="); strcat(lon, itoa(our_longitude));
+    strcpy(unt, "&unt="); strcat(unt, "metric");
+    strcat(url, lat); strcat(url, lon); strcat(url, unt);
+
+ 	if (http_out_get(url, false, WEATHER_HTTP_COOKIE, &body) != HTTP_OK ||
+        http_out_send() != HTTP_OK) {
 		return;
-	}
-	dict_write_int32(body, WEATHER_KEY_LATITUDE, our_latitude);
-	dict_write_int32(body, WEATHER_KEY_LONGITUDE, our_longitude);
-	dict_write_cstring(body, WEATHER_KEY_UNIT_SYSTEM, UNIT_SYSTEM);
-	// Send it.
-	if(http_out_send() != HTTP_OK) {
-		weather_layer_set_icon(&weather_layer, WEATHER_ICON_NO_WEATHER);
-		return;
-	}
+    }
+
 }
