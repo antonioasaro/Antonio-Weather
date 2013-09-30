@@ -352,7 +352,7 @@ void request_weather() {
 	strcpy(url, "http://antonioasaro.site50.net/weather.php");
 	strcpy(lat, "?lat="); strcat(lat, itoa(our_latitude)); 
 	strcpy(lon, "&lon="); strcat(lon, itoa(our_longitude));
-    strcpy(unt, "&unt="); strcat(unt, "metric");
+    strcpy(unt, "&unt="); strcat(unt, "metric");                    // or "imperial"
     strcat(url, lat); strcat(url, lon); strcat(url, unt);
 
  	if (http_out_get(url, false, WEATHER_HTTP_COOKIE, &body) != HTTP_OK ||
