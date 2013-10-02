@@ -39,12 +39,16 @@ function process_weather($json_in) {
     if (!$json_output) die(); 
 
     $weather     = $json_output->weather;
-    $temperature = $json_output->main->temp;
+    $temp        = $json_output->main->temp;
+    $temp_max    = $json_output->main->temp_max;
+    $temp_min    = $json_output->main->temp_min;
     $icon        = $weather[0]->icon;
 
     $result    = array();
     $result[1] = $icon;
-    $result[2] = array('I', round($temperature, 0));
+    $result[2] = array('I', round($temp, 0));
+    $result[3] = array('I', round($temp_max, 0));
+    $result[4] = array('I', round($temp_min, 0));
     return $result;
 }
 
