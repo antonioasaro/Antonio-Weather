@@ -40,15 +40,15 @@ function process_weather($json_in) {
 
     $weather     = $json_output->weather;
     $temp        = $json_output->main->temp;
-    $temp_max    = $json_output->main->temp_max;
     $temp_min    = $json_output->main->temp_min;
+    $temp_max    = $json_output->main->temp_max;
     $icon        = $weather[0]->icon;
 
     $result    = array();
     $result[1] = $icon;
     $result[2] = array('I', round($temp, 0));
-    $result[3] = array('I', round($temp_max, 0));
-    $result[4] = array('I', round($temp_min, 0));
+    $result[3] = array('I', round($temp_min, 0));
+    $result[4] = array('I', round($temp_max, 0));
     return $result;
 }
 
