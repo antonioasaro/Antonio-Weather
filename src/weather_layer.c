@@ -27,7 +27,7 @@ void weather_layer_init(WeatherLayer* weather_layer, GPoint pos) {
 	layer_add_child(&weather_layer->layer, &weather_layer->temp_layer_background.layer);
 	
     // Add temperature layer
-	text_layer_init(&weather_layer->temp_layer, GRect(72, 21, 72, 80));
+	text_layer_init(&weather_layer->temp_layer, GRect(72, 20, 72, 80));
 	text_layer_set_background_color(&weather_layer->temp_layer, GColorClear);
 	text_layer_set_text_alignment(&weather_layer->temp_layer, GTextAlignmentCenter);
 	text_layer_set_font(&weather_layer->temp_layer, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUTURA_40)));
