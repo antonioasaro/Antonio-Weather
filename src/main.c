@@ -20,7 +20,7 @@ PBL_APP_INFO(MY_UUID,
 
 #define TIME_FRAME      (GRect(0, 0, 144, 168-6))
 #define DATE_FRAME      (GRect(1, 60, 144, 168-62))
-#define UPDATED_FRAME   (GRect(78, 150, 144, 168))
+#define UPDATED_FRAME   (GRect(78, 152, 144, 168))
 #define MINMAX_FRAME    (GRect(82, 100, 144, 20))
 
 // POST variables
@@ -269,7 +269,7 @@ void handle_init(AppContextRef ctx)
 
     res_d = resource_get_handle(RESOURCE_ID_FUTURA_18);
     res_h = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53);
-	res_u = resource_get_handle(RESOURCE_ID_FUTURA_12);
+	res_u = resource_get_handle(RESOURCE_ID_FUTURA_BOLD_12);
 
     font_date = fonts_load_custom_font(res_d);
     font_hour = fonts_load_custom_font(res_h);

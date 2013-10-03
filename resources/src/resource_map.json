@@ -1,16 +1,12 @@
 {
     "media": [
         {
-            "trackingAdjust": -4,
-            "characterRegex": "[0-9:\u00b0 -]",
-            "defName": "FUTURA_35",
+            "defName": "FUTURA_BOLD_12",
             "type": "font",
             "file": "fonts/futura.ttf"
         },
         {
-            "trackingAdjust": -4,
-            "characterRegex": "[0-9:\u00b0 -]",
-            "defName": "FUTURA_40",
+            "defName": "FUTURA_12",
             "type": "font",
             "file": "fonts/futura.ttf"
         },
@@ -22,7 +18,16 @@
             "file": "fonts/futura.ttf"
         },
         {
-            "defName": "FUTURA_12",
+            "trackingAdjust": -4,
+            "characterRegex": "[0-9:\u00b0 -]",
+            "defName": "FUTURA_40",
+            "type": "font",
+            "file": "fonts/futura.ttf"
+        },
+        {
+            "trackingAdjust": -4,
+            "characterRegex": "[0-9:\u00b0 -]",
+            "defName": "FUTURA_35",
             "type": "font",
             "file": "fonts/futura.ttf"
         },
