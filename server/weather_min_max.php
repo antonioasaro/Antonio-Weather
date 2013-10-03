@@ -13,9 +13,10 @@ $unt = $_GET['unt'];
 // $lon = "-79.4000";
 // $unt = "metric";
 
-$json  = curl_get('http://api.openweathermap.org/data/2.5/weather?lat='.$lat.'&lon='.$lon.'&units='.$unt);
+$json_curr  = curl_get('http://api.openweathermap.org/data/2.5/weather?lat='.$lat.'&lon='.$lon.'&units='.$unt);
+$json_forc  = curl_get('http://api.openweathermap.org/data/2.5/forecast/daily?cnt=1&mode=json&lat='.$lat.'&lon='.$lon.'&units='.$unt);
 
-$weather = process_weather($json);
+$weather = process_weather($json_curr, $json_forc);
 print json_encode($weather);
 
 function curl_get($url){
@@ -34,15 +35,18 @@ function curl_get($url){
     return $output;
 }
 
-function process_weather($json_in) {
-    $json_output = json_decode(utf8_decode($json_in));
+function process_weather($json_curr, $json_forc) {
+    $json_output = json_decode(utf8_decode($json_curr));
     if (!$json_output) die(); 
-
     $weather     = $json_output->weather;
     $temp        = $json_output->main->temp;
-    $temp_min    = $json_output->main->temp_min;
-    $temp_max    = $json_output->main->temp_max;
     $icon        = $weather[0]->icon;
+
+    $json_output = json_decode(utf8_decode($json_forc));
+    $list        = $json_output->list;
+    $day         = $list[0]->temp;
+    $temp_min    = $day->min;
+    $temp_max    = $day->max;
 
     $result    = array();
     $result[1] = $icon;
