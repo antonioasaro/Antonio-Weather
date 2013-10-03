@@ -20,7 +20,8 @@ PBL_APP_INFO(MY_UUID,
 
 #define TIME_FRAME      (GRect(0, 0, 144, 168-6))
 #define DATE_FRAME      (GRect(1, 60, 144, 168-62))
-#define UPDATED_FRAME   (GRect(76, 150, 144, 168))
+#define UPDATED_FRAME   (GRect(78, 150, 144, 168))
+#define MINMAX_FRAME    (GRect(82, 100, 144, 20))
 
 // POST variables
 #define WEATHER_KEY_LATITUDE 1
@@ -29,7 +30,9 @@ PBL_APP_INFO(MY_UUID,
 	
 // Received variables
 #define WEATHER_KEY_ICON 1
-#define WEATHER_KEY_TEMPERATURE 2
+#define WEATHER_KEY_TEMP 2
+#define WEATHER_KEY_MIN_TEMP 3
+#define WEATHER_KEY_MAX_TEMP 4
 	
 #define WEATHER_HTTP_COOKIE 1949327671
 #define TIME_HTTP_COOKIE 1131038282
@@ -38,6 +41,7 @@ Window window;          /* main window */
 TextLayer date_layer;   /* layer for the date */
 TimeLayer time_layer;   /* layer for the time */
 TextLayer updated_layer;	/* layer for the updated time */
+TextLayer minmax_layer;	
 
 GFont font_date;        /* font for date */
 GFont font_hour;        /* font for hour */
@@ -139,8 +143,21 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 #endif
 		}
 	}
-	Tuple* temperature_tuple = dict_find(received, WEATHER_KEY_TEMPERATURE);
-	if(temperature_tuple) {
+	
+	int min_temp = -1;
+	int max_temp = -1;
+	static char minmax[32];
+	
+	Tuple* min_temp_tuple = dict_find(received, WEATHER_KEY_MIN_TEMP);
+	if (min_temp_tuple) { min_temp = min_temp_tuple->value->int16; }
+	Tuple* max_temp_tuple = dict_find(received, WEATHER_KEY_MAX_TEMP);
+	if (max_temp_tuple) { max_temp = max_temp_tuple->value->int16; }
+	strcpy(minmax, itoa(max_temp)); strcat(minmax, "°/ ");
+	strcat(minmax, itoa(min_temp)); strcat(minmax, "°");
+	if (min_temp_tuple && max_temp_tuple) { text_layer_set_text(&minmax_layer, minmax); }
+
+	Tuple* temperature_tuple = dict_find(received, WEATHER_KEY_TEMP);
+	if (temperature_tuple) {
 		weather_layer_set_temperature(&weather_layer, temperature_tuple->value->int16);
        	get_time(&updated_tm); set_updated(); 	// updated last successful wweather event
 		has_temperature = true;
@@ -286,6 +303,17 @@ void handle_init(AppContextRef ctx)
     text_layer_set_text_alignment(&updated_layer, GTextAlignmentLeft);
     layer_set_frame(&updated_layer.layer, UPDATED_FRAME);
     layer_add_child(&window.layer, &updated_layer.layer);
+
+	// Add hi/low layer
+    text_layer_init(&minmax_layer, window.layer.frame);
+    text_layer_set_text_color(&minmax_layer, GColorBlack);
+    text_layer_set_background_color(&minmax_layer, GColorClear);
+    text_layer_set_font(&minmax_layer, font_updated);
+    text_layer_set_text_alignment(&minmax_layer, GTextAlignmentLeft);
+    layer_set_frame(&minmax_layer.layer, MINMAX_FRAME);
+    layer_add_child(&window.layer, &minmax_layer.layer);
+
+	
 	
 	http_register_callbacks((HTTPCallbacks){.failure=failed,.success=success,.reconnect=reconnect,.location=location}, (void*)ctx);
 	
@@ -349,7 +377,7 @@ void request_weather() {
 		return;
 	}
 
-	strcpy(url, "http://antonioasaro.site50.net/weather.php");
+	strcpy(url, "http://antonioasaro.site50.net/weather_min_max.php");
 	strcpy(lat, "?lat="); strcat(lat, itoa(our_latitude)); 
 	strcpy(lon, "&lon="); strcat(lon, itoa(our_longitude));
     strcpy(unt, "&unt="); strcat(unt, "metric");                    // or "imperial"

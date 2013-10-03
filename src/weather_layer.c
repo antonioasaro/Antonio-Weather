@@ -27,10 +27,10 @@ void weather_layer_init(WeatherLayer* weather_layer, GPoint pos) {
 	layer_add_child(&weather_layer->layer, &weather_layer->temp_layer_background.layer);
 	
     // Add temperature layer
-	text_layer_init(&weather_layer->temp_layer, GRect(72, 14, 72, 80));
+	text_layer_init(&weather_layer->temp_layer, GRect(72, 21, 72, 80));
 	text_layer_set_background_color(&weather_layer->temp_layer, GColorClear);
 	text_layer_set_text_alignment(&weather_layer->temp_layer, GTextAlignmentCenter);
-	text_layer_set_font(&weather_layer->temp_layer, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUTURA_40)));
+	text_layer_set_font(&weather_layer->temp_layer, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUTURA_35)));
 	layer_add_child(&weather_layer->layer, &weather_layer->temp_layer.layer);
 	
 	// Note absence of icon layer
@@ -60,12 +60,12 @@ void weather_layer_set_temperature(WeatherLayer* weather_layer, int16_t t) {
 	if (strlen(weather_layer->temp_str) == 1 || 
 		(strlen(weather_layer->temp_str) == 2 && weather_layer->temp_str[0] != '1')) {
 	  // Don't move temperature if between 0-9° or 20°-99°
-	  text_layer_set_font(&weather_layer->temp_layer, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUTURA_40)));
+	  text_layer_set_font(&weather_layer->temp_layer, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUTURA_35)));
 	  text_layer_set_text_alignment(&weather_layer->temp_layer, GTextAlignmentCenter);
 	  memcpy(&weather_layer->temp_str[degree_pos], "°", 3);
 	} else if (strlen(weather_layer->temp_str) == 2 && weather_layer->temp_str[0] == '1') {
 	  // Move temperature slightly to the left if between 10°-19°
-	  text_layer_set_font(&weather_layer->temp_layer, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUTURA_40)));
+	  text_layer_set_font(&weather_layer->temp_layer, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FUTURA_35)));
 	  text_layer_set_text_alignment(&weather_layer->temp_layer, GTextAlignmentLeft);
 	  memcpy(&weather_layer->temp_str[degree_pos], "°", 3); 
 	} else if (strlen(weather_layer->temp_str) > 2) { 
