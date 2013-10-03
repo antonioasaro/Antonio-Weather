@@ -20,8 +20,8 @@ PBL_APP_INFO(MY_UUID,
 
 #define TIME_FRAME      (GRect(0, 0, 144, 168-6))
 #define DATE_FRAME      (GRect(1, 60, 144, 168-62))
+#define MINMAX_FRAME    (GRect(82,  96, 144, 20))
 #define UPDATED_FRAME   (GRect(78, 152, 144, 168))
-#define MINMAX_FRAME    (GRect(82, 100, 144, 20))
 
 // POST variables
 #define WEATHER_KEY_LATITUDE 1
@@ -269,7 +269,7 @@ void handle_init(AppContextRef ctx)
 
     res_d = resource_get_handle(RESOURCE_ID_FUTURA_18);
     res_h = resource_get_handle(RESOURCE_ID_FUTURA_CONDENSED_53);
-	res_u = resource_get_handle(RESOURCE_ID_FUTURA_BOLD_12);
+	res_u = resource_get_handle(RESOURCE_ID_FUTURA_12);
 
     font_date = fonts_load_custom_font(res_d);
     font_hour = fonts_load_custom_font(res_h);
@@ -308,7 +308,7 @@ void handle_init(AppContextRef ctx)
     text_layer_init(&minmax_layer, window.layer.frame);
     text_layer_set_text_color(&minmax_layer, GColorBlack);
     text_layer_set_background_color(&minmax_layer, GColorClear);
-    text_layer_set_font(&minmax_layer, font_updated);
+    text_layer_set_font(&minmax_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18_BOLD)); // font_updated);
     text_layer_set_text_alignment(&minmax_layer, GTextAlignmentLeft);
     layer_set_frame(&minmax_layer.layer, MINMAX_FRAME);
     layer_add_child(&window.layer, &minmax_layer.layer);
