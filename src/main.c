@@ -20,7 +20,7 @@ PBL_APP_INFO(MY_UUID,
 
 #define TIME_FRAME      (GRect(0, 0, 144, 168-6))
 #define DATE_FRAME      (GRect(1, 60, 144, 168-62))
-#define MINMAX_FRAME    (GRect(82,  96, 144, 20))
+#define MINMAX_FRAME    (GRect(78,  96, 144, 20))
 #define UPDATED_FRAME   (GRect(78, 152, 144, 168))
 
 // POST variables
@@ -152,7 +152,7 @@ void success(int32_t cookie, int http_status, DictionaryIterator* received, void
 	if (min_temp_tuple) { min_temp = min_temp_tuple->value->int16; }
 	Tuple* max_temp_tuple = dict_find(received, WEATHER_KEY_MAX_TEMP);
 	if (max_temp_tuple) { max_temp = max_temp_tuple->value->int16; }
-	strcpy(minmax, itoa(max_temp)); strcat(minmax, "°/ ");
+	strcpy(minmax, itoa(max_temp)); strcat(minmax, "° - ");
 	strcat(minmax, itoa(min_temp)); strcat(minmax, "°");
 	if (min_temp_tuple && max_temp_tuple) { text_layer_set_text(&minmax_layer, minmax); }
 
