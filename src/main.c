@@ -292,7 +292,7 @@ void handle_init(AppContextRef ctx)
     layer_add_child(&window.layer, &date_layer.layer);
 
 	// Add weather layer
-	weather_layer_init(&weather_layer, GPoint(0, 90));
+	weather_layer_init(&weather_layer, GPoint(0, 89));
 	layer_add_child(&window.layer, &weather_layer.layer);
 	
 	// Add updated layer
